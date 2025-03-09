@@ -82,7 +82,9 @@ export async function finishPendingOrdersOfCustomer(customerId: string) {
   }
   return false;
 }
-export async function fetchPendingOrderOfCustomer(customerId: string | null) {
+export async function fetchPendingOrderOfCustomer(
+  customerId: string | undefined
+) {
   if (!customerId) {
     return;
   }
