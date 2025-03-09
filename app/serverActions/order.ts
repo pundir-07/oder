@@ -31,14 +31,12 @@ export async function createOrderInDatabase(
       };
     });
     await supabase.from("order_items").insert(orderItems);
-    await supabase
-      .from("payments")
-      .insert({
-        order_id: createdOrder.id,
-        status: "PENDING",
-        method: "UPI",
-        value: orderValue,
-      });
+    await supabase.from("payments").insert({
+      order_id: createdOrder.id,
+      status: "PENDING",
+      method: "UPI",
+      value: orderValue,
+    });
     console.log("Order created Successfully");
     const newOrder = {
       id: createdOrder.id,
@@ -84,7 +82,10 @@ export async function finishPendingOrdersOfCustomer(customerId: string) {
   }
   return false;
 }
-export async function fetchPendingOrderOfCustomer(customerId: string) {
+export async function fetchPendingOrderOfCustomer(customerId: string | null) {
+  if (!customerId) {
+    return;
+  }
   try {
     const { data, error } = await supabase
       .from("orders")
