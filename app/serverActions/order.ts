@@ -6,7 +6,7 @@ const supabase = createClient();
 
 export async function createOrderInDatabase(
   items: CartItem[],
-  customerId: string
+  customerId: string | undefined
 ) {
   await finishPendingOrdersOfCustomer(customerId);
   const orderValue = items.reduce(
@@ -51,7 +51,7 @@ export async function createOrderInDatabase(
   return null;
 }
 
-export async function fetchAllCustomerOrders(customerId: string) {
+export async function fetchAllCustomerOrders(customerId: string | undefined) {
   try {
     const { data: orders } = await supabase
       .from("orders")
@@ -64,7 +64,9 @@ export async function fetchAllCustomerOrders(customerId: string) {
   return null;
 }
 
-export async function finishPendingOrdersOfCustomer(customerId: string) {
+export async function finishPendingOrdersOfCustomer(
+  customerId: string | undefined
+) {
   try {
     const { error } = await supabase
       .from("orders")
@@ -91,27 +93,30 @@ export async function fetchPendingOrderOfCustomer(
   try {
     const { data, error } = await supabase
       .from("orders")
-      .select("id,value,order_items(item_id,quantity,price,items(name))")
+      .select("id,value,order_items(item_id,quantity,price)")
       .eq("customer_id", customerId)
       .eq("status", "PENDING")
       .single();
     if (error) {
       throw new Error("Error fetching pending Order");
     }
-    const items = data.order_items.map((item) => {
-      return {
-        id: item.item_id,
-        name: item.items.name,
-        price: item.price,
-        quantity: item.quantity,
-      };
+    console.log(data);
+    const itemIds = data.order_items.map((item) => {
+      return item.item_id;
     });
+
+    const { data: items } = await supabase
+      .from("items")
+      .select("*") // Select all columns or specify required columns
+      .in("id", itemIds);
+
     const pendingOrder = {
       id: data.id,
       items: items,
       isPayed: false,
       value: data.value,
     };
+    console.log(`pending order--`, pendingOrder);
     return pendingOrder as Order;
   } catch (error) {
     console.log(error);
