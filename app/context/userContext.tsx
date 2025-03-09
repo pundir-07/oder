@@ -8,7 +8,14 @@ interface UserContextType {
 }
 
 // Create context with a more explicit type
-export const UserContext = createContext<UserContextType | undefined>(undefined);
+export const UserContext = createContext<UserContextType>({
+    user: {
+        id: "",
+        name: "",
+        phone: "",
+    },
+    setUser: () => { }
+});
 
 export default function UserProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User>({ id: "", name: "", phone: "" });
