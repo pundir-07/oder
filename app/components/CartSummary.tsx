@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { CartItem } from '../types'
 import { Button } from './ui/button'
 import { createOrderInDatabase } from '../serverActions/order'
@@ -7,7 +7,6 @@ import { OrdersContext } from '../context/orderContext'
 import { CartContext } from '../context/cartContext'
 
 export default function CartSummary({ items, closeSheet }: { items: CartItem[], closeSheet: () => void }) {
-    const [error, setError] = useState("")
     const itemTotal = items.reduce((sum, item) => item.price * item.quantity + sum, 0)
     const { createOrder } = useContext(OrdersContext);
     const { clearCart } = useContext(CartContext);
@@ -18,7 +17,6 @@ export default function CartSummary({ items, closeSheet }: { items: CartItem[], 
     async function placeOrder() {
         const order = await createOrderInDatabase(items, user.id)
         if (!order) {
-            setError("Error placing Order!")
             closeSheet()
             return
         }

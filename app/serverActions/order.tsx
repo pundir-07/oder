@@ -70,7 +70,7 @@ export async function fetchPendingOrderOfCustomer(customerId: string) {
         if (error) {
             throw new Error("Error fetching pending Order")
         }
-        let items = data.order_items.map(item => {
+        const items = data.order_items.map(item => {
             return {
                 id: item.item_id,
                 name: item.items.name,
