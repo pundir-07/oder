@@ -1,13 +1,14 @@
-"use client"
+"use client";
 import { createContext, ReactNode, useState } from "react";
 import { User } from "../types/user";
 
-const initialUserContext = {
-    user: { id: "", name: "", phone: "" }, // Ensure it matches the User type
-    setUser: (user: User) => { },
-};
+interface UserContextType {
+    user: User;
+    setUser: (user: User) => void;
+}
 
-export const UserContext = createContext(initialUserContext);
+// Create context with a more explicit type
+export const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export default function UserProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User>({ id: "", name: "", phone: "" });
