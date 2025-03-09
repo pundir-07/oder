@@ -50,14 +50,23 @@ export default {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        green: "hsl(var(--green))",
+        brown: "hsl(var(--brown))",
+        beige: "hsl(var(--beige))",
+        current: "hsl(var(--current))",
+        gold: "hsl(var(--gold))",
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        ssm: "calc(var(--radius) - 5px)",
       },
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],
+      },
+      animation: {
+        pulse: "pulse 0.8s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
     },
   },

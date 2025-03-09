@@ -7,7 +7,8 @@ const initialCart: CartContextType = {
     items: [],
     addToCart: () => { },
     removeFromCart: () => { },
-    count: 0
+    count: 0,
+    clearCart: () => { }
 }
 export const CartContext = createContext<CartContextType>(initialCart);
 
@@ -39,9 +40,13 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         });
         setCount(count - 1)
     }
+    function clearCart() {
+        setCount(0)
+        setItems([])
+    }
 
     return (
-        <CartContext.Provider value={{ items, addToCart, removeFromCart, count }}>
+        <CartContext.Provider value={{ items, addToCart, removeFromCart, count, clearCart }}>
             {children}
         </CartContext.Provider>
     );

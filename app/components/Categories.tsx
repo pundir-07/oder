@@ -18,10 +18,10 @@ export default function Categories({ items }: { items: Item[] }) {
         setImagesLoadedCount(0)
     }
     return (
-        <div className="bg-white py-4 ">
+        <div className="bg-white py-2 ">
 
             <div className='flex items-center justify-between px-4 pb-4'>
-                <h1 className='text-xl font-semibold'>Categories</h1>
+                <h1 className='text-lg font-semibold'>Categories</h1>
                 <CategorySelector handleSelected={handleSelected} />
             </div>
             {!loadingComplete && <HorizontalLoading />}

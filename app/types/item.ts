@@ -1,3 +1,5 @@
+import { CartItem } from "./cart";
+
 export interface Item {
   id: number;
   created_at: string;
@@ -13,4 +15,8 @@ export enum Categories {
   MAIN_COURSE,
   DESSERTS,
   DRINKS,
+}
+
+export interface OrderedItem extends CartItem {
+  served: boolean;
 }

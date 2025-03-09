@@ -5,6 +5,7 @@ export interface CartContextType {
   addToCart: (item: Item) => void;
   removeFromCart: (id: number) => void;
   count: number;
+  clearCart: () => void;
 }
 
 export interface CartItem extends Item {

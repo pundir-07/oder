@@ -1,11 +1,30 @@
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import { CartItem } from '../types'
 import { Button } from './ui/button'
+import { createOrderInDatabase } from '../serverActions/order'
+import { UserContext } from '../context/userContext'
+import { OrdersContext } from '../context/orderContext'
+import { CartContext } from '../context/cartContext'
 
-export default function CartSummary({ items }: { items: CartItem[] }) {
+export default function CartSummary({ items, closeSheet }: { items: CartItem[], closeSheet: () => void }) {
+    const [error, setError] = useState("")
     const itemTotal = items.reduce((sum, item) => item.price * item.quantity + sum, 0)
+    const { createOrder } = useContext(OrdersContext);
+    const { clearCart } = useContext(CartContext);
+    const { user } = useContext(UserContext)
     if (items.length === 0) {
         return <p className='my-8'>Please add something to the cart to place order</p>
+    }
+    async function placeOrder() {
+        const order = await createOrderInDatabase(items, user.id)
+        if (!order) {
+            setError("Error placing Order!")
+            closeSheet()
+            return
+        }
+        createOrder(order)
+        clearCart()
+        closeSheet()
     }
     return (
         <div>
@@ -33,7 +52,7 @@ export default function CartSummary({ items }: { items: CartItem[] }) {
                 <p className='font-medium text-sm '>₹{itemTotal * 0.02 + itemTotal}</p>
             </div>
             <div className="w-full h-20 "></div>
-            <Button className="w-full mt-5 text-xl h-10 ">Checkout -&gt; </Button>
+            <Button className="w-full mt-5 text-xl h-10 " onClick={placeOrder}>Place Order </Button>
         </div>
     )
 }
