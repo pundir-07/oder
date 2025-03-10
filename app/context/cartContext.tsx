@@ -1,52 +1,71 @@
-"use client"
-import { createContext, ReactNode, useState } from "react";
-import { CartContextType, Item } from "@/app/types";
-import { CartItem } from "@/app/types";
+"use client";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import { CartContextType, Item, CartItem } from "@/app/types";
+import { addItemToCartDB, clearCartDB, fetchCartItemsDB, removeItemFromCartDB } from "../actions/cart";
+import { UserContext } from "./userContext";
 
 const initialCart: CartContextType = {
     items: [],
     addToCart: () => { },
     removeFromCart: () => { },
     count: 0,
-    clearCart: () => { }
-}
+    clearCart: () => { },
+    loading: true
+};
+
 export const CartContext = createContext<CartContextType>(initialCart);
 
 export default function CartProvider({ children }: { children: ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([]);
     const [count, setCount] = useState(0);
-    function addToCart(item: Item) {
-        setItems(prev => {
-            const existingItem = prev.find(i => i.id === item.id);
-            if (existingItem) {
-                return prev.map(i => i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i);
-            }
-            return [...prev, { ...item, quantity: 1 }];
-        });
-        setCount(count + 1)
+    const { user } = useContext(UserContext);
+    const [loading, setLoading] = useState(true);  // Added loading state
+
+    async function fetchExistingCart() {
+        if (!user.id) return;
+        setLoading(true);
+        const fetchedItems = await fetchCartItemsDB(user.id);
+        if (fetchedItems) {
+            setItems(fetchedItems);
+            setCount(fetchedItems.reduce((total, item) => total + item.quantity, 0));
+        }
+        setLoading(false);
     }
 
-    function removeFromCart(id: number) {
-        setItems(prev => {
-            const item = prev.find(i => i.id === id);
-            if (!item) {
-                console.log("Item to be removed not found. Error");
-                return prev;
-            }
-            if (item.quantity === 1) {
-                return prev.filter(i => i.id !== id);
-            }
-            return prev.map(i => i.id === id ? { ...i, quantity: i.quantity - 1 } : i);
-        });
-        setCount(count - 1)
+    useEffect(() => {
+        fetchExistingCart();
+    }, [user.id]);
+
+    async function addToCart(item: Item) {
+        if (!user.id) return;
+
+        const success = await addItemToCartDB(item.id, user.id);
+        if (success) {
+            await fetchExistingCart();  // Fetch updated cart after adding
+        }
     }
-    function clearCart() {
-        setCount(0)
-        setItems([])
+
+    async function removeFromCart(id: number) {
+        if (!user.id) return;
+
+        const success = await removeItemFromCartDB(id, user.id);
+        if (success) {
+            await fetchExistingCart();  // Fetch updated cart after removing
+        }
+    }
+
+    async function clearCart() {
+        if (!user.id) return;
+
+        const success = await clearCartDB(user.id);
+        if (success) {
+            setItems([]);
+            setCount(0);
+        }
     }
 
     return (
-        <CartContext.Provider value={{ items, addToCart, removeFromCart, count, clearCart }}>
+        <CartContext.Provider value={{ items, addToCart, removeFromCart, count, clearCart, loading }}>
             {children}
         </CartContext.Provider>
     );

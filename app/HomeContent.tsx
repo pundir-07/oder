@@ -11,7 +11,7 @@ import UserModal from "./components/UserModal";
 import { UserContext } from "./context/userContext";
 import { OrdersContext } from "./context/orderContext";
 import CurrentOrders from "./components/CurrentOrder";
-import { fetchPendingOrderOfCustomer } from "./serverActions/order";
+import { fetchPendingOrderOfCustomer } from "./actions/order";
 export default function HomeContent({ items }: { items: Item[] }) {
     const [searchText, setSearchText] = useState<string>("")
     // const [userInfo, setUserInfo] = useState<{ name: string; phone: string } | null>(null);
@@ -26,11 +26,7 @@ export default function HomeContent({ items }: { items: Item[] }) {
         }
         setLoading(false)
     }, []);
-    // useEffect(() => {
-    //     if (user?.id) {
-    //         fetchAllCustomerOrders(user.id);
-    //     }
-    // }, [user.id]);
+
     useEffect(() => {
         async function fetchOrder() {
             const pendingOrder = await fetchPendingOrderOfCustomer(user?.id)
@@ -54,8 +50,6 @@ export default function HomeContent({ items }: { items: Item[] }) {
             {searchText && <SearchResults onLoad={() => { }} query={searchText} items={items} />}
             {!searchText && <BestSellers items={bestsellers} />}
             {!searchText && <Categories items={items} />}
-
-
             <CartButton />
         </div>
     )

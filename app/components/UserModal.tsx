@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { checkUser, createUser } from "../serverActions/user";
+import { checkUser, createUser } from "../actions/user";
 
 export default function UserModal({ onSave }: { onSave: (id: string, name: string, phone: string) => void }) {
     const [name, setName] = useState("");

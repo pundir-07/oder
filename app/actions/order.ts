@@ -110,6 +110,11 @@ export async function fetchPendingOrderOfCustomer(
       .select("*") // Select all columns or specify required columns
       .in("id", itemIds);
 
+    items?.forEach((item) => {
+      const orderItem = data.order_items.find((i) => i.item_id == item.id);
+      item.quantity = orderItem?.quantity;
+    });
+
     const pendingOrder = {
       id: data.id,
       items: items,

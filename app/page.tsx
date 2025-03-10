@@ -4,14 +4,14 @@ import CartProvider from "./context/cartContext";
 import OrderProvider from "./context/orderContext";
 import UserProvider from "./context/userContext";
 import HomeContent from "./HomeContent";
-import getItems from "./serverActions/items";
+import getItems from "./actions/items";
 
 export default async function Home() {
   const items = await getItems()
   return (
     <>
-      <CartProvider>
-        <UserProvider>
+      <UserProvider>
+        <CartProvider>
           <OrderProvider>
 
             <HomeContent items={items} />
@@ -21,8 +21,8 @@ export default async function Home() {
               </h1>
             </div>
           </OrderProvider>
-        </UserProvider>
-      </CartProvider>
+        </CartProvider>
+      </UserProvider>
     </>
   );
 }

@@ -1,17 +1,22 @@
 "use client"
-import React, { useContext, useRef, useState } from 'react'
+import React, { useContext, useRef, useState, useEffect } from 'react'
 import { Input } from './ui/input'
 import Image from 'next/image'
 import { X, User } from "lucide-react"
 import { UserContext } from '../context/userContext'
 export default function Header({ setSearchText, searchText }: { setSearchText: (text: string) => void, searchText: string }) {
     const [focus, setFocus] = useState(false)
+    const [entry, setEntry] = useState(false)
     const inputRef = useRef<HTMLInputElement | null>(null)
     const headerRef = useRef<HTMLElement | null>(null)
     const { user } = useContext(UserContext);
-
     const showCross = focus && searchText?.length > 0;
+
     console.log(`Header rerender searchText = ${searchText} showCross value = ${showCross}`)
+    useEffect(() => {
+        const timer = setTimeout(() => { setEntry(true) }, 300)
+        return () => { clearTimeout(timer) }
+    }, [])
     const handleFocus = () => {
         setFocus(true);
         setTimeout(() => {
@@ -24,7 +29,8 @@ export default function Header({ setSearchText, searchText }: { setSearchText: (
         }, 200); // Delay for smooth effect
     };
     return (
-        <header ref={headerRef} className=" relative flex flex-col justify-end p-5 bg-[url('/images/background.jpg')] bg-cover bg-center rounded-bl-3xl rounded-br-3xl">
+        <header ref={headerRef} className={`relative flex flex-col justify-end p-5 bg-[url('/images/background.jpg')] bg-cover 
+        bg-center rounded-bl-3xl rounded-br-3xl transition-all ease-in-out duration-500 ${entry ? " " : " "}`} >
             <div className="absolute z-0 inset-0 bg-black/50 rounded-b-3xl">
 
             </div>
@@ -37,7 +43,7 @@ export default function Header({ setSearchText, searchText }: { setSearchText: (
                 </div>
             </div>
             <div className="relative z-10">
-                <Input placeholder='Search' ref={inputRef} className='text-white ' onChange={(e) => setSearchText(e.target.value)} onFocus={handleFocus} value={searchText} onBlur={() => setTimeout(() => setFocus(false), 200)} />
+                <Input placeholder='Search' ref={inputRef} className={`text-white `} onChange={(e) => setSearchText(e.target.value)} onFocus={handleFocus} value={searchText} onBlur={() => setTimeout(() => setFocus(false), 200)} />
                 <div className='absolute flex items-center justify-center w-8 h-full right-0 top-0 '>
                     {showCross && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSearchText(""); inputRef.current?.focus(); setTimeout(() => setFocus(true), 300) }}>
                         <X size={20} color='white' />
