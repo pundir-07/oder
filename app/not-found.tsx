@@ -1,11 +1,17 @@
-"use client"
-import Lottie from 'lottie-react'
-import React from 'react'
-import notFoundAnimation from "@/public/lottie/404.json"
+
+
+"use client";
+import dynamic from "next/dynamic";
+import React from "react";
+import notFoundAnimation from "@/public/lottie/404.json";
+
+// Dynamically import Lottie without SSR
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+
 export default function NotFound() {
     return (
-        <div className='w-full h-screen flex items-center justify-center'>
+        <div className="w-full h-screen flex items-center justify-center">
             <Lottie animationData={notFoundAnimation} />
         </div>
-    )
+    );
 }
