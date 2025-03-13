@@ -8,8 +8,7 @@ import { motion } from 'framer-motion'
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 export default function PaymentSuccessPage() {
-    return
-    <Suspense>
+    return <Suspense>
         <PaymentSuccessContent />
     </Suspense>
 }
