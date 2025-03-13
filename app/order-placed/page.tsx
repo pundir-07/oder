@@ -14,12 +14,12 @@ export default function Page() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setExit(true);
-            router.replace("/");
+            router.replace("/home");
         }, 2000);
         return () => {
             clearTimeout(timer);
         };
-    }, []);
+    }, [router]);
 
     return (
         <div

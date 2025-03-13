@@ -1,12 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Order } from '../types/order'
-import { closeOrderInDatabase } from '../actions/order'
+import { closeOrderInDatabase, processPayment } from '../actions/order'
 import { OrdersContext } from '../context/orderContext'
 import OrderTimer from './OrderTimer'
+import { useRouter } from 'next/navigation'
 
 export default function CurrentOrders({ order }: { order: Order }) {
     const { clearOrder } = useContext(OrdersContext)
     const [entry, setEntry] = useState(false)
+    const router = useRouter()
     async function handleCloseOrder() {
         const orderClosed = await closeOrderInDatabase(order.id)
         if (orderClosed) {
@@ -19,8 +21,14 @@ export default function CurrentOrders({ order }: { order: Order }) {
 
         }, 100)
     }, [])
+    async function handlePayment() {
+        const { success } = await processPayment(order.id)
+        if (success) {
+            router.push(`/payment-success?order-id=${order.id}`)
+        }
+    }
     return (
-        <div className={`relative mx-2 p-2 bg-white rounded-md transition-all ease-in-out duration-700 ${entry ? "translate-x-0 opacity-100" : "translate-x-60 opacity-0"}`}>
+        <div className={`relative mx-2 p-2 bg-white rounded-md shadow-sm transition-all ease-in-out duration-700 ${entry ? "translate-x-0 opacity-100" : "translate-x-60 opacity-0"}`}>
             <div className="absolute rounded-full w-2 h-2 bg-red-500 right-2 animate-pulse" onClick={handleCloseOrder}></div>
 
             <div className="flex justify-between items-center">
@@ -43,8 +51,17 @@ export default function CurrentOrders({ order }: { order: Order }) {
                     <p className='text-sm font-medium'>₹{order.value}</p>
                 </div>
                 {/* <button className='border-2 border-green rounded-lg px-2 text-green font-medium text-sm transition-all duration-150 active:scale-95 active:translate-y-1'>Pay Now</button> */}
-                {!order.isPayed && <button className='border-2 border-green bg-green text-white rounded-lg px-2 py-1 text-green font-medium text-xs transition-all duration-150 active:scale-90' >Pay Now</button>}
-                {order.isPayed && <button className='  bg-gold text-gray-600 rounded-lg px-2 py-1 text-green font-medium text-xs transition-all duration-150 active:scale-90'>Payed</button>}
+                {!order.isPayed &&
+                    <button
+                        className='border-2 border-green bg-green text-white rounded-lg px-2 py-1 text-green font-medium text-xs transition-all duration-150 active:scale-90'
+                        onClick={handlePayment} >
+                        Pay Now
+                    </button>}
+                {order.isPayed &&
+                    <button
+                        className='bg-gold text-gray-900 rounded-lg px-2 py-1 text-green font-medium text-xs transition-all duration-150 active:scale-90'>
+                        Payed
+                    </button>}
 
 
             </div>

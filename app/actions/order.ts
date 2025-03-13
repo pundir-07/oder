@@ -37,7 +37,7 @@ export async function createOrderInDatabase(
       method: "UPI",
       value: orderValue,
     });
-    console.log("Order created Successfully");
+    console.log("Order created Successfully in DB");
     const newOrder = {
       id: createdOrder.id,
       items: items,
@@ -51,17 +51,63 @@ export async function createOrderInDatabase(
   return null;
 }
 
-export async function fetchAllCustomerOrders(customerId: string | undefined) {
+export async function fetchTenCustomerOrders(
+  customerId: string,
+  start: number,
+  end: number
+) {
   try {
-    const { data: orders } = await supabase
+    const { data } = await supabase
       .from("orders")
-      .select("id,value,status,order_items(item_id,quantity,price,items(name))")
-      .eq("customer_id", customerId);
-    console.log(orders);
+      .select("id,value,status,created_at")
+      .eq("customer_id", customerId)
+      .order("created_at", { ascending: false })
+      .range(start, end);
+
+    if (!data) {
+      throw new Error("Error fetching all cutomer orders from DB");
+    }
+    const orders: Order[] = data.map((o) => {
+      return { ...o, createdAt: o.created_at, items: [] };
+    });
+    // console.log("Fetched 10 customer orders:::::::::::::::::::::", orders);
+    const orderIds: string[] = [];
+    orders.forEach((o) => {
+      orderIds.push(o.id);
+    });
+
+    const { data: orderItems } = await supabase
+      .from("order_items")
+      .select("item_id,quantity,price,order_id,items(name)")
+      .in("order_id", orderIds);
+
+    const { data: items, error } = await supabase.from("items").select("*");
+    if (error) {
+      throw new Error("Error fetching items for items map for all orders");
+    }
+    const itemsMap = new Map();
+    items?.forEach((i) => {
+      itemsMap.set(i.id, i.name);
+    });
+    // console.log("Order items for orderids--", orderItems);
+
+    const finalOrders = orders.map((order) => ({
+      ...order,
+      items: (orderItems || []) // Ensures orderItems is always an array
+        .filter((oi) => oi.order_id === order.id) // No need for `?.`
+        .map((oi) => ({
+          id: oi.item_id,
+          quantity: oi.quantity,
+          price: oi.price,
+          name: itemsMap.get(oi.item_id),
+        })),
+    }));
+
+    // console.log("Final Orders object-=-=-=-==....>>>", finalOrders);
+    return finalOrders;
   } catch (error) {
     console.log(error);
   }
-  return null;
 }
 
 export async function finishPendingOrdersOfCustomer(
@@ -91,7 +137,7 @@ export async function fetchPendingOrderOfCustomer(
     return;
   }
   try {
-    const { data, error } = await supabase
+    const { data: currentOrder, error } = await supabase
       .from("orders")
       .select("id,value,order_items(item_id,quantity,price)")
       .eq("customer_id", customerId)
@@ -100,8 +146,8 @@ export async function fetchPendingOrderOfCustomer(
     if (error) {
       throw new Error("Error fetching pending Order");
     }
-    console.log(data);
-    const itemIds = data.order_items.map((item) => {
+    console.log(currentOrder);
+    const itemIds = currentOrder.order_items.map((item) => {
       return item.item_id;
     });
 
@@ -111,15 +157,22 @@ export async function fetchPendingOrderOfCustomer(
       .in("id", itemIds);
 
     items?.forEach((item) => {
-      const orderItem = data.order_items.find((i) => i.item_id == item.id);
+      const orderItem = currentOrder.order_items.find(
+        (i) => i.item_id == item.id
+      );
       item.quantity = orderItem?.quantity;
     });
-
+    const { data: paymentStatus } = await supabase
+      .from("payments")
+      .select("status")
+      .eq("order_id", currentOrder.id)
+      .single();
+    console.log("PAYMENT STATUS FOR CURRENT ORDER----", paymentStatus?.status);
     const pendingOrder = {
-      id: data.id,
+      id: currentOrder.id,
       items: items,
-      isPayed: false,
-      value: data.value,
+      isPayed: paymentStatus?.status === "PAYED" ? true : false,
+      value: currentOrder.value,
     };
     console.log(`pending order--`, pendingOrder);
     return pendingOrder as Order;
@@ -141,4 +194,21 @@ export async function closeOrderInDatabase(orderId: string) {
   } catch (error) {
     console.log(error);
   }
+}
+
+export async function processPayment(orderId: string) {
+  try {
+    const { error } = await supabase
+      .from("payments")
+      .update({ status: "PAYED" })
+      .eq("order_id", orderId)
+      .single();
+    if (error) {
+      return { success: false, error: error };
+    }
+    return { success: true, error: null };
+  } catch (error) {
+    console.log(error);
+  }
+  return { success: false, error: "Payment Error" };
 }

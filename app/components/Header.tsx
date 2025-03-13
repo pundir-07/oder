@@ -2,8 +2,9 @@
 import React, { useContext, useRef, useState, useEffect } from 'react'
 import { Input } from './ui/input'
 import Image from 'next/image'
-import { X, User } from "lucide-react"
+import { X } from "lucide-react"
 import { UserContext } from '../context/userContext'
+import UserDropdown from './UserDropdown'
 export default function Header({ setSearchText, searchText }: { setSearchText: (text: string) => void, searchText: string }) {
     const [focus, setFocus] = useState(false)
     const [entry, setEntry] = useState(false)
@@ -39,7 +40,7 @@ export default function Header({ setSearchText, searchText }: { setSearchText: (
                 <Image alt='logo' src="/images/logo.jpg" width={150} height={150} className='rounded-full my-4' />
                 <div className='relative flex items-end'>
                     <p className='text-white absolute top-1 right-8'>{user?.name}</p>
-                    <User size={25} color='white' />
+                    <UserDropdown />
                 </div>
             </div>
             <div className="relative z-10">

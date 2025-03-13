@@ -4,7 +4,7 @@ import {
     CardContent,
     CardFooter,
 } from "@/app/components/ui/card"
-import { Minus, Plus } from "lucide-react"
+import { Minus, Plus, Star } from "lucide-react"
 import { useContext } from "react"
 import { CartContext } from "@/app/context/cartContext"
 import { Item } from "@/app/types"
@@ -12,10 +12,8 @@ import Image from "next/image"
 
 
 export default function ItemCard({ item, onImageLoad }: { item: Item, onImageLoad: () => void }) {
-    // console.log("item in item card =====", item)
     const { items, addToCart, removeFromCart } = useContext(CartContext);
-    // const [isAdded, setIsAdded] = useState(false);
-    // const [count, setCount] = useState(0)
+
     let isAdded = items.find(i => i.id === item.id) ? true : false
     let count = items.find(i => i.id === item.id)?.quantity || 0
 
@@ -40,7 +38,7 @@ export default function ItemCard({ item, onImageLoad }: { item: Item, onImageLoa
             <CardContent className="relative w-full h-40 p-2">
                 <div className="relative w-full h-full">
                     <Image
-                        src={item.imageUrl}
+                        src={item.imageUrl || "/images/bg-food2.jpg"}
                         alt={item.name}
                         fill
                         className={`rounded-3xl`}
@@ -49,25 +47,34 @@ export default function ItemCard({ item, onImageLoad }: { item: Item, onImageLoa
                         onLoadingComplete={onImageLoad}
                     />
                 </div>
+                <div className="absolute right-2 bottom-2 flex gap-1 bg-white  rounded-xl px-2 py-1 inset-shadow-lg shadow-xl items-center transition-all active:scale-75 duration-500">
+
+                    {isAdded &&
+
+                        <Minus onClick={handleRemove} color="#F27C0D" size={16} />
+
+
+
+                    }
+                    {isAdded && <p className="text-sm text-primary font-medium">{count}</p>}
+                    {isAdded ? <Plus onClick={handleAdd} color="#F27C0D" size={16} /> : <p className="text-sm text-primary px-1 font-medium" onClick={handleAdd}>ADD</p>}
+
+                </div>
             </CardContent>
             <CardFooter className="p-0 pb-2 flex gap-2 justify-between w-full items-start">
-                <p className="text-sm font-medium w-20 whitespace-normal pl-2">{item.name}</p>
+                <div className="flex flex-col">
+
+                    <p className="text-xs font-medium w-30 whitespace-normal pl-2">{item.name}</p>
+                    <div className="flex items-center gap-1 px-2 mt-1 text-xs">
+                        <Star color='#00763d' fill='#00763d' size={14} />
+                        <p className='font-medium'>{item && item.rating}{!item.rating && 4.4}</p>
+                        <p className='text-gray-600 '>(23)</p>
+                    </div>
+                </div>
 
                 <div className="pr-2 flex flex-col items-end">
-                    <p className="text-sm font-bold">₹{item.price}</p>
-                    <div className="flex gap-1 bg-white border border-primary rounded-md px-1 inset-shadow-lg shadow-sm items-center">
+                    <p className="text-sm text-gray-600">₹{item.price}</p>
 
-                        {isAdded &&
-
-                            <Minus onClick={handleRemove} color="#F27C0D" size={20} />
-
-
-
-                        }
-                        {isAdded && <p className="text-sm">{count}</p>}
-                        {isAdded ? <Plus onClick={handleAdd} color="#F27C0D" size={20} /> : <p className="text-sm text-primary px-1" onClick={handleAdd}>Add</p>}
-
-                    </div>
                 </div>
             </CardFooter>
         </Card>

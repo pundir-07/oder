@@ -2,13 +2,14 @@ import { CartItem } from "./cart";
 
 export interface Item {
   id: number;
-  created_at: string;
+  created_at?: string;
   name: string;
   price: number;
-  category: Categories;
-  description: string;
-  isBestseller: boolean;
-  imageUrl: string;
+  category?: Categories;
+  description?: string;
+  isBestseller?: boolean;
+  imageUrl?: string;
+  rating?: number;
 }
 export enum Categories {
   SNACKS,
@@ -18,5 +19,5 @@ export enum Categories {
 }
 
 export interface OrderedItem extends CartItem {
-  served: boolean;
+  served?: boolean;
 }

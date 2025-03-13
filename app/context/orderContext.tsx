@@ -7,18 +7,20 @@ import { Order } from "../types/order";
 interface OrderContextType {
     order: Order,
     createOrder: (order: Order) => void,
-    clearOrder: () => void
+    clearOrder: () => void,
+    setPaymentCompleted: () => void
 }
 export const OrdersContext = createContext<OrderContextType>({
     order: {
         id: "",
         items: [],
         isPayed: false,
-        createdAt: null,
+        createdAt: "",
         value: 0
     },
     createOrder: () => { },
-    clearOrder: () => { }
+    clearOrder: () => { },
+    setPaymentCompleted: () => { }
 })
 
 export default function OrderProvider({ children }: { children: ReactNode }) {
@@ -26,7 +28,7 @@ export default function OrderProvider({ children }: { children: ReactNode }) {
         id: "",
         items: [],
         isPayed: false,
-        createdAt: null,
+        createdAt: "",
         value: 0
     })
     function createOrder(order: Order) {
@@ -37,11 +39,16 @@ export default function OrderProvider({ children }: { children: ReactNode }) {
             id: "",
             items: [],
             isPayed: false,
-            createdAt: null,
+            createdAt: "",
             value: 0
         })
     }
-    return <OrdersContext.Provider value={{ order, createOrder, clearOrder }}>
+    function setPaymentCompleted() {
+        setOrder(prev => {
+            return { ...prev, isPayed: true }
+        })
+    }
+    return <OrdersContext.Provider value={{ order, createOrder, clearOrder, setPaymentCompleted }}>
         {children}
     </OrdersContext.Provider>
 }

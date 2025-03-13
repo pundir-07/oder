@@ -1,5 +1,5 @@
 "use client";
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { CartContextType, Item, CartItem } from "@/app/types";
 import { addItemToCartDB, clearCartDB, fetchCartItemsDB, removeItemFromCartDB } from "../actions/cart";
 import { UserContext } from "./userContext";
@@ -20,28 +20,30 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     const [count, setCount] = useState(0);
     const { user } = useContext(UserContext);
     const [loading, setLoading] = useState(true);  // Added loading state
+    const memoisedFetchExistingCart = useCallback(
 
-    async function fetchExistingCart() {
-        if (!user.id) return;
-        setLoading(true);
-        const fetchedItems = await fetchCartItemsDB(user.id);
-        if (fetchedItems) {
-            setItems(fetchedItems);
-            setCount(fetchedItems.reduce((total, item) => total + item.quantity, 0));
-        }
-        setLoading(false);
-    }
+        async function fetchExistingCart() {
+            if (!user.id) return;
+            setLoading(true);
+            const fetchedItems = await fetchCartItemsDB(user.id);
+            if (fetchedItems) {
+                setItems(fetchedItems);
+                setCount(fetchedItems.reduce((total, item) => total + item.quantity, 0));
+            }
+            setLoading(false);
+        }, [user.id]
+    )
 
     useEffect(() => {
-        fetchExistingCart();
-    }, [user.id]);
+        memoisedFetchExistingCart();
+    }, [user.id, memoisedFetchExistingCart]);
 
     async function addToCart(item: Item) {
         if (!user.id) return;
 
         const success = await addItemToCartDB(item.id, user.id);
         if (success) {
-            await fetchExistingCart();  // Fetch updated cart after adding
+            await memoisedFetchExistingCart();  // Fetch updated cart after adding
         }
     }
 
@@ -50,7 +52,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
 
         const success = await removeItemFromCartDB(id, user.id);
         if (success) {
-            await fetchExistingCart();  // Fetch updated cart after removing
+            await memoisedFetchExistingCart();  // Fetch updated cart after removing
         }
     }
 
