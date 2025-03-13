@@ -1,10 +1,12 @@
 "use client"
-import Lottie from 'lottie-react'
 import React, { useContext, useEffect } from 'react'
 import welcomeAnimation from "@/public/lottie/welcome.json"
 import { motion } from "framer-motion"
 import { useRouter } from 'next/navigation'
 import { UserContext } from '../context/userContext'
+import dynamic from 'next/dynamic'
+
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 export default function WelcomePage() {
     const router = useRouter()
     const { user } = useContext(UserContext)

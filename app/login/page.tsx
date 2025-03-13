@@ -1,8 +1,11 @@
 "use client"
 import React, { useEffect } from 'react'
 import LoginForm from '../components/LoginForm'
-import Lottie from 'lottie-react'
+import dynamic from 'next/dynamic'
 import foodAnimation from "@/public/lottie/food.json"
+
+
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 export default function Login() {
     useEffect(() => {
         console.log('Page render Login')

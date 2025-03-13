@@ -1,9 +1,11 @@
 "use client"
-import Lottie from 'lottie-react'
+import dynamic from "next/dynamic";
 import React, { Suspense, useEffect, useState } from 'react'
 import paymentAnimation from "@/public/lottie/payment.json"
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
+
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 export default function PaymentSuccessPage() {
     return
