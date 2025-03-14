@@ -11,7 +11,7 @@ export default function Page() {
         return () => { clearTimeout(timer) }
     }, [])
     return (
-        <div className="w-full h-screen flex flex-col items-center justify-center">
+        <div className="sm:hidden w-full h-screen flex flex-col items-center justify-center">
             {/* <Lottie animationData={ratingAnimation} loop={false} className="w-40 h-40 " /> */}
             <motion.div
 

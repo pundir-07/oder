@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import UserProvider from "./context/userContext";
+import Image from "next/image";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -27,10 +28,21 @@ export default function RootLayout({
   return (
     <html lang="en" >
       <body
-        className={`bg-white ${geistSans.variable} ${geistMono.variable} antialiased font-poppins bg-slate-200`}
+        className={`bg-white ${geistSans.variable} ${geistMono.variable} antialiased font-poppins bg-slate-200 `}
       >
         <UserProvider>
           {children}
+          <div className="hidden sm:flex gap-10 w-full h-screen items-center justify-between">
+            <div className="bg-black/25 w-[50%] h-screen flex items-center justify-center">
+              <Image src={"/images/logo.jpg"} alt="LOGO" width={400} height={400} className="rounded-full" />
+            </div>
+            <div className="flex flex-col gap-10 items-center justify-center ">
+              <h1 className="text-2xl text-center w-[70%]">
+                Scan the QR code on your mobile device and start ordering at our restaurant.
+              </h1>
+              <Image src={"/images/qr.png"} alt="qr code" width={300} height={300} />
+            </div>
+          </div>
         </UserProvider>
         <div className="w-full h-28"></div>
       </body>

@@ -13,7 +13,7 @@ export default function Login() {
     console.log("Login PAGE render")
     return (
         <div className="w-full h-screen flex flex-col justify-center bg-[url('/images/background.jpg')] bg-cover 
-        bg-center">
+        bg-center sm:hidden">
 
             <div className="m-2 p-1 bg-white rounded-xl pb-7 ">
                 <div className="flex justify-center relative bottom-12">

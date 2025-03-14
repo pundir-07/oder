@@ -74,7 +74,7 @@ export default function OrderHistoryPage() {
 
 
     return (
-        <div className="w-full min-h-screen pb-12 bg-white">
+        <div className="w-full min-h-screen pb-12 bg-white sm:hidden">
             {/* Header */}
             <div className="h-14 p-2 bg-maroon text-white text-xl font-medium text-center rounded-bl-2xl rounded-br-full flex items-center gap-6 sticky top-0 z-10">
                 <ArrowLeft onClick={() => {

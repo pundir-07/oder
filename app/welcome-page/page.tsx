@@ -26,7 +26,7 @@ export default function WelcomePage() {
             key="welcome-page"
         >
 
-            <div className='w-full h-screen flex flex-col justify-center items-center bg-white'>
+            <div className='sm:hidden w-full h-screen flex flex-col justify-center items-center bg-white'>
                 <Lottie animationData={welcomeAnimation} loop={false} className='w-80 h-80' />
                 <motion.div
                     initial={{ opacity: 0, y: 70 }}

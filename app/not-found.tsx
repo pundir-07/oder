@@ -9,7 +9,7 @@ const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 export default function NotFound() {
     return (
-        <div className="w-full h-screen flex items-center justify-center">
+        <div className="sm:hidden w-full h-screen flex items-center justify-center">
             <Lottie animationData={notFoundAnimation} />
         </div>
     );

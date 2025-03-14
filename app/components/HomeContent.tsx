@@ -57,7 +57,7 @@ export default function HomeContent({ items }: { items: Item[] }) {
     const desserts = items.filter(item => item.category?.toString() === "DESSERTS")
     const drinks = items.filter(items => items.category?.toString() === "DRINKS")
     return (
-        <div className="flex flex-col gap-3 md:hidden">
+        <div className="flex flex-col gap-3 sm:hidden">
             <Header />
             <div className="relative z-10 flex justify-center w-auto">
                 <div className=" w-[90%]">

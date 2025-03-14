@@ -23,7 +23,7 @@ export default function Page() {
 
     return (
         <div
-            className={`w-full h-screen flex flex-col items-center justify-center bg-gray-100 transition-all ease-in-out duration-700 ${exit ? "translate-y-full opacity-0" : "translate-y-0 opacity-100"
+            className={`sm:hidden w-full h-screen flex flex-col items-center justify-center bg-gray-100 transition-all ease-in-out duration-700 ${exit ? "translate-y-full opacity-0" : "translate-y-0 opacity-100"
                 }`}
         >
             <div>

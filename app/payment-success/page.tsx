@@ -31,7 +31,7 @@ function PaymentSuccessContent() {
         return null
     }
     return (
-        <div className='w-full h-screen flex flex-col gap-2 items-center justify-center'>
+        <div className='sm:hidden w-full h-screen flex flex-col gap-2 items-center justify-center'>
             <Lottie animationData={paymentAnimation} loop={false} />
             <motion.div
                 initial={{ opacity: 0, y: 70 }}
