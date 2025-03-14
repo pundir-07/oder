@@ -1,66 +1,58 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Order } from '../types/order'
-import { closeOrderInDatabase, processPayment } from '../actions/order'
 import { OrdersContext } from '../context/orderContext'
-import OrderTimer from './OrderTimer'
-import { useRouter } from 'next/navigation'
+import OrderCountdown from './OrderCountdown'
 
 export default function CurrentOrders({ order }: { order: Order }) {
-    const { clearOrder } = useContext(OrdersContext)
+    const { deadOrder, processPayment } = useContext(OrdersContext)
     const [entry, setEntry] = useState(false)
-    const router = useRouter()
-    async function handleCloseOrder() {
-        const orderClosed = await closeOrderInDatabase(order.id)
-        if (orderClosed) {
-            clearOrder()
-        }
-    }
+
     useEffect(() => {
         setTimeout(() => {
             setEntry(true)
 
         }, 100)
     }, [])
-    async function handlePayment() {
-        const { success } = await processPayment(order.id)
-        if (success) {
-            router.push(`/payment-success?order-id=${order.id}`)
-        }
-    }
+
+
     return (
         <div className={`relative mx-2 p-2 bg-white rounded-md shadow-sm transition-all ease-in-out duration-700 ${entry ? "translate-x-0 opacity-100" : "translate-x-60 opacity-0"}`}>
-            <div className="absolute rounded-full w-2 h-2 bg-red-500 right-2 animate-pulse" onClick={handleCloseOrder}></div>
+            <div className=" absolute flex right-2 items-center gap-1">
+                <OrderCountdown order={order} />
+                <div className={` rounded-full w-2 h-2 ${deadOrder ? "bg-gray-800" : "bg-red-500  animate-pulse"} `} ></div>
+            </div>
 
             <div className="flex justify-between items-center">
 
-                <h1 className='text-sm font-medium bg-pink-100 rounded-md px-2 mb-1'>Current order </h1>
+                <h1 className='text-sm font-medium bg-pink-100 rounded-md px-2 mb-1'>{deadOrder ? "Order Served" : "Current order"} </h1>
             </div>
             {order.items.map(item => {
-                return (<div key={item.id} className="flex mt-1 px-2 justify-between w-48">
+                return (<div key={item.id} className="flex mt-1 px-2 gap-4 w-48">
                     <p className='text-gray-500 text-xs '>{item.name}</p>
                     <div className="flex gap-2 items-center">
 
                         <p className='text-gray-500 text-xs '>x {item.quantity}</p>
-                        <OrderTimer />
+                        {/* <OrderTimer /> */}
                     </div>
                 </div>)
             })}
+
             <div className="flex justify-between items-center mt-4 px-2">
                 <div className="flex gap-2 items-center">
                     <p className='text-sm text-gray-500'>Order Total</p>
                     <p className='text-sm font-medium'>₹{order.value}</p>
                 </div>
                 {/* <button className='border-2 border-green rounded-lg px-2 text-green font-medium text-sm transition-all duration-150 active:scale-95 active:translate-y-1'>Pay Now</button> */}
-                {!order.isPayed &&
+                {!order.isPaid &&
                     <button
                         className='border-2 border-green bg-green text-white rounded-lg px-2 py-1 text-green font-medium text-xs transition-all duration-150 active:scale-90'
-                        onClick={handlePayment} >
+                        onClick={processPayment} >
                         Pay Now
                     </button>}
-                {order.isPayed &&
+                {order.isPaid &&
                     <button
                         className='bg-gold text-gray-900 rounded-lg px-2 py-1 text-green font-medium text-xs transition-all duration-150 active:scale-90'>
-                        Payed
+                        <h1 className='text-black'>Paid</h1>
                     </button>}
 
 

@@ -86,7 +86,7 @@ export default function LoginForm() {
 
 
     return (
-        <div className='p-2 flex flex-col gap-2'>
+        <div className='p-2 px-6 flex flex-col gap-2'>
             {step == 1 && <motion.div
                 initial={{ opacity: 0, x: 100 }}  // Entry animation (starts hidden & moved up)
                 animate={{ opacity: 1, x: 0 }}    // When mounted (visible & normal position)

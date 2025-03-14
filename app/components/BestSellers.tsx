@@ -8,8 +8,8 @@ import { Tag } from 'lucide-react'
 export default function BestSellers({ items }: { items: Item[] }) {
     const [imagesLoadedCount, setImagesLoadedCount] = useState(0)
     const loadingComplete = imagesLoadedCount >= items.length
-    console.log(`items number in bestseller - ${items.length}`)
-    console.log(`images loaded in bestseller - ${imagesLoadedCount} `)
+    // console.log(`items number in bestseller - ${items.length}`)
+    // console.log(`images loaded in bestseller - ${imagesLoadedCount} `)
     return (
         <div className='relative bg-white py-2'>
             <h2 className="px-4 pb-2 text-lg font-semibold flex items-center gap-1">BestSellers <Tag size={15} color='red' strokeWidth={3} /></h2>

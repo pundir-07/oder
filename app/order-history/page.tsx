@@ -8,6 +8,8 @@ import { Button } from "../components/ui/button";
 import { fetchTenCustomerOrders } from "../actions/order";
 import { Order } from "../types/order";
 import LoadingSpinner from "../components/ui/loadingSpinner";
+import { fetchItemRating } from "../actions/review";
+import { Toaster } from "@/components/ui/sonner"
 
 export default function OrderHistoryPage() {
     const { user, loading } = useContext(UserContext);
@@ -18,7 +20,7 @@ export default function OrderHistoryPage() {
     const [loadingOrders, setLoadingOrders] = useState<boolean>(true);
     const [pageLoading, setPageLoading] = useState(true)
     const router = useRouter();
-
+    fetchItemRating(3)
     const fetchCustomerOrders = useCallback(async () => {
         console.trace("fetchCustomerOrders called----");
         if (!user.id) return;
@@ -65,15 +67,16 @@ export default function OrderHistoryPage() {
             console.log('Use effect about to fetch orders')
             fetchCustomerOrders(); // 
             setPageLoading(false)
+            // window.scrollTo(0, 700)
+
         }
     }, [user.id, fetchCustomerOrders, orders.length])// 
-
 
 
     return (
         <div className="w-full min-h-screen pb-12 bg-white">
             {/* Header */}
-            <div className="h-14 p-2 bg-maroon text-white text-xl font-medium text-center rounded-bl-2xl rounded-br-full flex items-center gap-6 sticky top-0">
+            <div className="h-14 p-2 bg-maroon text-white text-xl font-medium text-center rounded-bl-2xl rounded-br-full flex items-center gap-6 sticky top-0 z-10">
                 <ArrowLeft onClick={() => {
 
                     router.back()
@@ -101,8 +104,7 @@ export default function OrderHistoryPage() {
                         return (
                             <OrderHistoryItem
                                 key={order.id}
-                                items={order.items}
-                                orderValue={order.value}
+                                order={order}
                                 date={formattedDate}
                             />
                         );
@@ -127,6 +129,7 @@ export default function OrderHistoryPage() {
                     </Button>
                 )}
             </div>
+            <Toaster className="bg-red-100" />
         </div>
     );
 }

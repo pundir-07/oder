@@ -20,6 +20,7 @@ export default async function Home() {
               This website works only on mobile devices kindly scan the below qr code on you mobile device to access the website.
             </h1>
           </div>
+
         </OrderProvider>
       </CartProvider>
 

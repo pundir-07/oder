@@ -24,17 +24,17 @@ export const UserContext = createContext<UserContextType>({
 export default function UserProvider({ children }: { children: ReactNode }) {
     const [user, setUserState] = useState<User>({ id: "", name: "", phone: "" });
     const [loading, setLoading] = useState(true)
-    console.log("USER CONTEXT RUN , current user--", user)
+    // console.log("USER CONTEXT RUN , current user--", user)
     useEffect(() => {
         if (localStorage.getItem("user")) {
             const existingUser = JSON.parse(localStorage.getItem("user") || "")
-            console.log("<---Found user inlocal storage setting user context--->")
+            // console.log("<---Found user inlocal storage setting user context--->")
             setUserState(existingUser)
         }
         setLoading(false)
     }, [])
     function setUser(u: User) {
-        console.log("SEtting local storage user ...", u)
+        // console.log("SEtting local storage user ...", u)
         localStorage.setItem("user", JSON.stringify(u))
         setUserState(u)
     }

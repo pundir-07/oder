@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 
 export default function HorizontalScroll({ items, visible, onLoad }: { items: Item[], onLoad: () => void, visible: boolean }) {
-    console.log(`Items recieved in horscrol ${items}`)
+    // console.log(`Items recieved in horscrol ${items}`)
     return (
         <div className={cn(" overflow-x-auto scrollbar-hide whitespace-nowrap px-4", visible ? "w-full" : "w-0 h-0")}>
 

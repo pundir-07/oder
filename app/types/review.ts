@@ -1,6 +1,11 @@
 export interface Review {
   customerId: string;
+  orderId: string;
+  text: string;
+}
+
+export interface Rating {
   itemId: number;
-  rating: number;
-  review: string;
+  customerId: string;
+  rating: number | null;
 }

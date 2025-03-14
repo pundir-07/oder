@@ -41,7 +41,7 @@ export async function createOrderInDatabase(
     const newOrder = {
       id: createdOrder.id,
       items: items,
-      isPayed: false,
+      isPaid: false,
       value: orderValue,
     };
     return newOrder as Order;
@@ -59,7 +59,7 @@ export async function fetchTenCustomerOrders(
   try {
     const { data } = await supabase
       .from("orders")
-      .select("id,value,status,created_at")
+      .select("id,value,status,created_at,rating,is_paid")
       .eq("customer_id", customerId)
       .order("created_at", { ascending: false })
       .range(start, end);
@@ -68,7 +68,13 @@ export async function fetchTenCustomerOrders(
       throw new Error("Error fetching all cutomer orders from DB");
     }
     const orders: Order[] = data.map((o) => {
-      return { ...o, createdAt: o.created_at, items: [] };
+      return {
+        ...o,
+        createdAt: o.created_at,
+        items: [],
+        isPaid: o.is_paid,
+        countDown: 0,
+      };
     });
     // console.log("Fetched 10 customer orders:::::::::::::::::::::", orders);
     const orderIds: string[] = [];
@@ -101,6 +107,7 @@ export async function fetchTenCustomerOrders(
           price: oi.price,
           name: itemsMap.get(oi.item_id),
         })),
+      rating: order.rating,
     }));
 
     // console.log("Final Orders object-=-=-=-==....>>>", finalOrders);
@@ -130,23 +137,29 @@ export async function finishPendingOrdersOfCustomer(
   }
   return false;
 }
-export async function fetchPendingOrderOfCustomer(
-  customerId: string | undefined
-) {
+
+export async function fetchPendingOrderOfCustomer(customerId: string) {
   if (!customerId) {
     return;
   }
   try {
     const { data: currentOrder, error } = await supabase
       .from("orders")
-      .select("id,value,order_items(item_id,quantity,price)")
+      .select("id,value,order_items(item_id,quantity,price),created_at,is_paid")
       .eq("customer_id", customerId)
       .eq("status", "PENDING")
       .single();
     if (error) {
       throw new Error("Error fetching pending Order");
     }
-    console.log(currentOrder);
+    const orderTime = new Date(currentOrder.created_at);
+    const expiryTime = new Date(orderTime.getTime() + 1 * 60 * 1000); // Add 10 minutes
+    const now = new Date();
+    const timeDiff = Math.max(
+      Math.floor((expiryTime.getTime() - now.getTime()) / 1000),
+      0
+    ); // Avoid negative values
+
     const itemIds = currentOrder.order_items.map((item) => {
       return item.item_id;
     });
@@ -162,17 +175,12 @@ export async function fetchPendingOrderOfCustomer(
       );
       item.quantity = orderItem?.quantity;
     });
-    const { data: paymentStatus } = await supabase
-      .from("payments")
-      .select("status")
-      .eq("order_id", currentOrder.id)
-      .single();
-    console.log("PAYMENT STATUS FOR CURRENT ORDER----", paymentStatus?.status);
     const pendingOrder = {
       id: currentOrder.id,
       items: items,
-      isPayed: paymentStatus?.status === "PAYED" ? true : false,
+      isPaid: currentOrder.is_paid,
       value: currentOrder.value,
+      countDown: timeDiff,
     };
     console.log(`pending order--`, pendingOrder);
     return pendingOrder as Order;
@@ -196,16 +204,17 @@ export async function closeOrderInDatabase(orderId: string) {
   }
 }
 
-export async function processPayment(orderId: string) {
+export async function processPaymentDB(orderId: string) {
   try {
     const { error } = await supabase
       .from("payments")
-      .update({ status: "PAYED" })
+      .update({ status: "PAID" })
       .eq("order_id", orderId)
       .single();
     if (error) {
       return { success: false, error: error };
     }
+
     return { success: true, error: null };
   } catch (error) {
     console.log(error);

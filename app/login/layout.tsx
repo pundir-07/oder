@@ -4,7 +4,7 @@ import React, { ReactNode, useContext, useEffect } from 'react'
 import { UserContext } from '../context/userContext'
 
 export default function Loginlayout({ children }: { children: ReactNode }) {
-    console.log("Login LAYOUT render")
+    // console.log("Login LAYOUT render")
     const { user } = useContext(UserContext)
     const router = useRouter()
     useEffect(() => {

@@ -24,7 +24,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en" >
       <body
@@ -32,8 +31,6 @@ export default function RootLayout({
       >
         <UserProvider>
           {children}
-
-
         </UserProvider>
         <div className="w-full h-28"></div>
       </body>

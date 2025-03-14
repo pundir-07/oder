@@ -10,6 +10,7 @@ export interface Item {
   isBestseller?: boolean;
   imageUrl?: string;
   rating?: number;
+  ratingCount?: number;
 }
 export enum Categories {
   SNACKS,

@@ -68,7 +68,7 @@ export default function ItemCard({ item, onImageLoad }: { item: Item, onImageLoa
                     <div className="flex items-center gap-1 px-2 mt-1 text-xs">
                         <Star color='#00763d' fill='#00763d' size={14} />
                         <p className='font-medium'>{item && item.rating}{!item.rating && 4.4}</p>
-                        <p className='text-gray-600 '>(23)</p>
+                        <p className='text-gray-600 '>{`(${item.ratingCount})`}</p>
                     </div>
                 </div>
 

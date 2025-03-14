@@ -39,7 +39,7 @@ export default function AccordianItemCard({ item, onImageLoad }: { item: Item, o
                     <div className="flex items-center gap-1 px-2 mt-1">
                         <Star color='#00763d' fill='#00763d' size={14} />
                         <p className='font-medium'>{item && item.rating}{!item.rating && 4.4}</p>
-                        <p className='text-gray-600 '>(23)</p>
+                        <p className='text-gray-600 '>{`(${item.ratingCount})`}</p>
                     </div>
                     <div className="relative" onClick={() => { setCollapseDescription(!collapseDescription) }}>
 

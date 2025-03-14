@@ -15,7 +15,7 @@ export async function createUser(user: User) {
     console.log("Creating new user...");
     const { data } = await supabase
       .from("customers")
-      .insert(user)
+      .insert({ name: user.name, phone: user.phone })
       .select("*")
       .single();
     return { success: true, user: data as User, error: null };
