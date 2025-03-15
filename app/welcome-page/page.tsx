@@ -12,7 +12,7 @@ export default function WelcomePage() {
     const { user } = useContext(UserContext)
     useEffect(() => {
         const timer = setTimeout(() => {
-            router.push("/home")
+            router.replace("/home")
         }, 2000)
         return () => { clearTimeout(timer) }
     }, [router])

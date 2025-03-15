@@ -3,16 +3,15 @@ import { CartItem } from '../types'
 import { Button } from './ui/button'
 import { createOrderInDatabase } from '../actions/order'
 import { UserContext } from '../context/userContext'
-import { OrdersContext } from '../context/orderContext'
 import { CartContext } from '../context/cartContext'
 import { useRouter } from 'next/navigation'
 import { Loader2, Trash } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function CartSummary({ items, closeSheet }: { items: CartItem[], closeSheet: () => void }) {
     const itemTotal = items.reduce((sum, item) => item.price * item.quantity + sum, 0)
     const tax = parseFloat((itemTotal * 0.02).toFixed(2))
     const total = itemTotal + tax
-    const { createOrder } = useContext(OrdersContext);
     const { clearCart } = useContext(CartContext);
     const { user } = useContext(UserContext)
     const [loading, setLoading] = useState(false)
@@ -24,10 +23,9 @@ export default function CartSummary({ items, closeSheet }: { items: CartItem[], 
         setLoading(true)
         const order = await createOrderInDatabase(items, user.id)
         if (!order) {
-            closeSheet()
+            toast.error("Something went wrong!")
             return
         }
-        createOrder(order)
         setTimeout(() => { clearCart() }, 500)
 
         router.replace("/order-placed")

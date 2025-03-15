@@ -26,7 +26,7 @@ function PaymentSuccessContent() {
         setValid(true)
         const timer = setTimeout(() => {
             setLoading(true)
-            router.push("/home")
+            router.replace("/home")
         }, 2000)
         return () => { clearTimeout(timer) }
     }, [router, searchParams])
