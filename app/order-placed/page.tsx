@@ -6,21 +6,27 @@ import dynamic from "next/dynamic";
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 import successAnimation from "@/public/lottie/success.json";
+import { Loader2 } from "lucide-react";
 
 export default function Page() {
     const router = useRouter();
     const [exit, setExit] = useState(false);
-
+    const [loading, setLoading] = useState(false)
     useEffect(() => {
         const timer = setTimeout(() => {
             setExit(true);
+            setLoading(true)
             router.replace("/home");
         }, 2000);
         return () => {
             clearTimeout(timer);
         };
     }, [router]);
-
+    if (loading) {
+        return <div className="w-full h-screen flex items-center justify-center">
+            <Loader2 className="text-green w-8 h-8 animate-spin" />
+        </div>
+    }
     return (
         <div
             className={`sm:hidden w-full h-screen flex flex-col items-center justify-center bg-gray-100 transition-all ease-in-out duration-700 ${exit ? "translate-y-full opacity-0" : "translate-y-0 opacity-100"

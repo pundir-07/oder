@@ -2,11 +2,12 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Order } from '../types/order'
 import { OrdersContext } from '../context/orderContext'
 import OrderCountdown from './OrderCountdown'
+import { Loader2 } from 'lucide-react'
 
 export default function CurrentOrders({ order }: { order: Order }) {
     const { deadOrder, processPayment } = useContext(OrdersContext)
     const [entry, setEntry] = useState(false)
-
+    const [loading, setLoading] = useState(false)
     useEffect(() => {
         setTimeout(() => {
             setEntry(true)
@@ -44,11 +45,16 @@ export default function CurrentOrders({ order }: { order: Order }) {
                 </div>
                 {/* <button className='border-2 border-green rounded-lg px-2 text-green font-medium text-sm transition-all duration-150 active:scale-95 active:translate-y-1'>Pay Now</button> */}
                 {!order.isPaid &&
-                    <button
-                        className='border-2 border-green bg-green text-white rounded-lg px-2 py-1 text-green font-medium text-xs transition-all duration-150 active:scale-90'
-                        onClick={processPayment} >
-                        Pay Now
-                    </button>}
+                    <div className="border-2 border-green bg-green text-white rounded-lg flex items-center justify-center w-16 h-6 font-medium text-xs transition-all duration-150 active:scale-90 "
+                        onClick={() => {
+                            setLoading(true)
+                            processPayment()
+                        }}>
+
+                        {loading ? <Loader2 className='w-4 h-4 animate-spin' /> : "Pay Now"}
+                    </div>
+                }
+
                 {order.isPaid &&
                     <button
                         className='bg-gold text-gray-900 rounded-lg px-2 py-1 text-green font-medium text-xs transition-all duration-150 active:scale-90'>
