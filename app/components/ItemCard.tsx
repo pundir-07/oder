@@ -42,7 +42,6 @@ export default function ItemCard({ item, onImageLoad }: { item: Item, onImageLoa
                         alt={item.name}
                         fill
                         className={`rounded-3xl`}
-                        unoptimized
                         onLoad={onImageLoad}
                         onLoadingComplete={onImageLoad}
                     />

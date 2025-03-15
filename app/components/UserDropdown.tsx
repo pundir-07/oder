@@ -24,7 +24,7 @@ export default function UserDropdown() {
                 <div className={`absolute z-100 top-8 right-1 bg-red-50 rounded-md shadow-md}`}>
 
                     <Link href={"/order-history"} >
-                        <div className="p-4 pb-1  text-sm font-medium active:bg-gray-900 active:text-white text-nowrap ">My Orders</div>
+                        <div className="p-4 pb-1  text-sm font-medium active:bg-gray-900 active:text-white text-nowrap  ">My Orders</div>
                     </Link>
                     <LogOutConfirmation />
                 </div >

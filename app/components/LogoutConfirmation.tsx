@@ -6,13 +6,14 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Button } from "./ui/button"
-import { LogOut } from "lucide-react"
+import { Loader2, LogOut } from "lucide-react"
 
 import { useContext, useState, } from "react"
 import { UserContext } from "../context/userContext"
 
 export default function LogOutConfirmation() {
     const [open, setOpen] = useState(false)
+    const [loading, setLoading] = useState(false)
     const { removeUser } = useContext(UserContext)
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -29,8 +30,11 @@ export default function LogOutConfirmation() {
                     <DialogTitle>Are you sure you want to logout?</DialogTitle>
                     <div className=" flex justify-between  w-full px-8 ">
 
-                        <Button className="w-28" onClick={() => { setOpen(false) }}>No</Button>
-                        <Button className="w-28" onClick={removeUser}>Yes</Button>
+                        <Button className="w-28 active:scale-90 transition-all duration-200 ease-in-out" onClick={() => { setOpen(false) }} >No</Button>
+                        <Button className="w-28 active:scale-90 transition-all duration-200 ease-in-out" onClick={() => {
+                            setLoading(true)
+                            removeUser()
+                        }}>{loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Yes"}</Button>
                     </div>
                 </DialogHeader>
             </DialogContent>

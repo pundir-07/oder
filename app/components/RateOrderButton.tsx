@@ -1,19 +1,13 @@
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
+
 import { Item } from "../types"
 import { useContext, useEffect, useRef, useState } from "react"
-import { Loader2, Star } from "lucide-react"
-import { Textarea } from "@/components/ui/textarea"
+import { Loader2, Star, X } from "lucide-react"
 import { Button } from "./ui/button"
 import { Rating } from "../types/review"
 import { UserContext } from "../context/userContext"
 import { addRatings, addReview, } from "../actions/review"
 import { useRouter } from "next/navigation"
+import { AnimatePresence, motion } from "framer-motion"
 
 export default function RateOrderButton({ items, orderId }: { items: Item[], orderId: string }) {
     const textAreaRef = useRef<HTMLTextAreaElement>(null)
@@ -32,10 +26,22 @@ export default function RateOrderButton({ items, orderId }: { items: Item[], ord
     const notRated = ratings.reduce((r, curr) => { return r + (curr.rating || 0) }, 0) === 0 ? true : false
 
     useEffect(() => {
-        if (textAreaRef.current) {
+        if (open && textAreaRef.current) {
             textAreaRef.current.blur()
+            // document.getElementById("dialog-title")?.focus();
         }
-    }, [textAreaRef])
+    }, [textAreaRef, open])
+
+    useEffect(() => {
+        if (open) {
+            document.body.classList.add("overflow-hidden");
+        } else {
+            document.body.classList.remove("overflow-hidden");
+        }
+        return () => document.body.classList.remove("overflow-hidden");
+    }, [open]);
+
+
     function setItemRating(id: number, rating: number) {
         setRatings(prev => {
             const newRatings = prev.map(r => {
@@ -47,9 +53,7 @@ export default function RateOrderButton({ items, orderId }: { items: Item[], ord
             return newRatings
         })
         console.log("ITEMS RATINGS CURRENT------", ratings)
-        if (textAreaRef.current) {
-            textAreaRef.current.focus()
-        }
+
     }
     async function handleSubmit() {
         console.log("Final ratings before submission ====", ratings)
@@ -62,37 +66,73 @@ export default function RateOrderButton({ items, orderId }: { items: Item[], ord
 
         router.replace("/rating-success")
     }
-    return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger className='w-28 bg-white text-primary border border-primary rounded-md text-sm font-medium' >RATE ORDER</DialogTrigger>
-            <DialogContent className="max-w-[95%] rounded-lg">
-                <DialogHeader>
-                    <DialogTitle>Rate Items from your order</DialogTitle>
-                    <div className="pt-4">
-                        {items?.map((item) => {
-                            return <div key={item.id} className="flex justify-between items-center">
-                                <div className="font-medium">{item.name}</div>
-                                <StarRating itemId={item.id} setItemRating={setItemRating} />
+    if (!open) {
+        return <div onClick={() => { setOpen(true) }} className="w-28 border border-primary bg-white text-primary rounded-md p-1 text-sm text-center font-medium active:border-2"> RATE ORDER</div>
+    } else {
+
+
+        return <AnimatePresence>
+            <div className="fixed top-0 left-0 w-full h-screen bg-black/75 flex items-center justify-center z-10"
+                onClick={() => setOpen(false)}
+            >
+
+                {open && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ duration: 0.1 }}
+                        className="bg-white rounded-md w-[95%] max-h-[70%] z-20 p-6 overflow-y-auto"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div
+
+                        >
+                            <header className="relative flex justify-center items-center">
+                                <h2 className="text-xl font-medium">Rate items from your order</h2>
+                                <X
+                                    className="absolute right-0 cursor-pointer"
+                                    onClick={() => setOpen(false)}
+                                />
+                            </header>
+                            <div className="pt-4">
+                                {items.map((item) => (
+                                    <div key={item.id} className="flex justify-between items-center">
+                                        <div className="font-medium text-sm">{item.name}</div>
+                                        <StarRating itemId={item.id} setItemRating={setItemRating} />
+                                    </div>
+                                ))}
+                                <textarea
+                                    ref={textAreaRef}
+                                    autoFocus={false}
+                                    placeholder="How was your meal? Tell us what you loved or what could be better!"
+
+                                    className="mt-4 text-xs w-full p-2 border border-gray-400 rounded-lg min-h-20 max-h-32 h-auto placeholder:italic"
+                                    value={reviewText}
+                                    onChange={(e) => setReviewText(e.target.value)}
+                                />
+                                <div className="flex justify-end">
+                                    <Button
+                                        className="mt-4 w-24"
+                                        onClick={handleSubmit}
+                                        disabled={notRated || loading}
+                                    >
+                                        {loading ? <Loader2 className="w-8 h-8 text-white animate-spin" /> : "Submit"}
+                                    </Button>
+                                </div>
                             </div>
-                        })}
-                        <Textarea
-                            ref={textAreaRef}
-                            placeholder="How was your meal? Let us know what you loved or what could be improved!"
-                            className="mt-4 text-xs placeholder:text-gray-400 placeholder:italic min-h-20 max-h-32 h-auto"
-                            value={reviewText}
-                            onChange={(e) => { setReviewText(e.target.value) }}
-                        />
-
-                        <div className="flex justify-end">
-                            <Button className="mt-4 w-24" onClick={handleSubmit} disabled={notRated} >{loading ? <Loader2 className="w-8 h-8 text-white animate-spin" /> : "Submit"}</Button>
                         </div>
-                    </div>
-                </DialogHeader>
-            </DialogContent>
-        </Dialog>
+                    </motion.div>
+                )}
+            </div>
+        </AnimatePresence>
 
-    )
+
+    }
+
 }
+
+
 
 export function StarRating({ itemId, setItemRating }: { itemId: number, setItemRating: (id: number, rating: number) => void }) {
     const [rating, setRating] = useState(0)
@@ -106,34 +146,34 @@ export function StarRating({ itemId, setItemRating }: { itemId: number, setItemR
                 setRating(1)
             }}
             fill={rating >= 1 ? "#ff7b00" : "#fff"}
-            className="px-1" size={40} />
+            className="px-1" size={30} />
         <Star
             color="#ff7b00"
             onClick={() => {
                 setRating(2)
             }}
             fill={rating >= 2 ? "#ff7b00" : "#fff"}
-            className="px-1" size={40} />
+            className="px-1" size={30} />
         <Star
             color="#ff7b00"
             onClick={() => {
                 setRating(3)
             }}
             fill={rating >= 3 ? "#ff7b00" : "#fff"}
-            className="px-1" size={40} />
+            className="px-1" size={30} />
         <Star
             color="#ff7b00"
             onClick={() => {
                 setRating(4)
             }}
             fill={rating >= 4 ? "#ff7b00" : "#fff"}
-            className="px-1" size={40} />
+            className="px-1" size={30} />
         <Star
             color="#ff7b00"
             onClick={() => {
                 setRating(5)
             }}
             fill={rating >= 5 ? "#ff7b00" : "#fff"}
-            className="px-1" size={40} />
+            className="px-1" size={30} />
     </div>
 }
