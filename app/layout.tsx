@@ -40,7 +40,7 @@ export default function RootLayout({
               <h1 className="text-2xl text-center w-[70%]">
                 Scan the QR code on your mobile device and start ordering at our restaurant.
               </h1>
-              <Image src={"/images/qr.png"} alt="qr code" width={300} height={300} />
+              <Image src={"/images/qr-code.png"} alt="qr code" width={300} height={300} />
             </div>
           </div>
         </UserProvider>
